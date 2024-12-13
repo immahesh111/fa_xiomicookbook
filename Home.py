@@ -22,12 +22,12 @@ def load_excel_file(file_path):
         return None
 
 # Load the DataFrame from the Xiomi Excel file
-df = load_excel_file("Xiomi.xlsx")  # Replace with your actual file name
+df = load_excel_file("Xiomi1.xlsx")  # Replace with your actual file name
 
 # Check if DataFrame is loaded successfully
 if df is not None:
     # Display header
-    st.markdown("""<h1 style="color:#002b50;">Xiomi FA Analysis</h1>""", unsafe_allow_html=True)
+    st.markdown("""<h1 style="color:#002b50;">Xiomi FATP FA Cook Book</h1>""", unsafe_allow_html=True)
 
     # Sidebar with logo and date picker
     st.sidebar.image("images/Padget.png") 
@@ -62,31 +62,38 @@ if df is not None:
                     success_percentages[code] = random.randint(60, 80)   # Random between 60-80%
 
             # Display Success Percentage Title and Gauge for each error code in parallel layout
+            # Display Success Percentage Title and Gauge for each error code in parallel layout
             for code in success_percentages.keys():
                 percentage = success_percentages[code]
                 color = "red" if percentage <= 50 else "yellow" if percentage <= 80 else "green"
 
-                # Create a gauge chart using Plotly
+    # Create a gauge chart using Plotly
                 fig = go.Figure(go.Indicator(
-                    mode="gauge+number",
-                    value=percentage,
-                    title={'text': f"Success Rate : {percentage}%", 'font': {'size': 20}},
-                    gauge={
-                        'axis': {'range': [0, 100], 'tickcolor': "black"},
-                        'bar': {'color': color},
-                        'bgcolor': "white",
-                        'steps': [
-                            {'range': [0, 50], 'color': "red"},
-                            {'range': [50, 80], 'color': "yellow"},
-                            {'range': [80, 100], 'color': "green"}
-                        ],
-                        'threshold': {
-                            'line': {'color': "black", 'width': 2},
-                            'thickness': 0.75,
-                            'value': percentage}}))
+                mode="gauge+number",
+                value=percentage,
+                title={'text': f"Success Rate: {percentage}%", 'font': {'size': 20}},
+                gauge={
+            'axis': {'range': [0, 100], 'tickcolor': "black"},
+            'bar': {'color': color},
+            'bgcolor': "white",
+            'steps': [
+                {'range': [0, 50], 'color': "red"},
+                {'range': [50, 80], 'color': "yellow"},
+                {'range': [80, 100], 'color': "green"}
+                    ],
+                'threshold': {
+                'line': {'color': "black", 'width': 2},
+                'thickness': 0.75,
+                'value': percentage}}))
 
-                # Update layout to change the size of the gauge
-                fig.update_layout(height=300, width=600)  # Adjust height and width as needed
+                # Update layout to change the size of the gauge and reduce padding
+                fig.update_layout(
+                height=200,
+                width=200,
+                margin=dict(l=10, r=10, t=20, b=10),  # Adjust margins (left, right, top, bottom)
+                paper_bgcolor="white",  # Optional: Set background color
+                font=dict(size=14)  # Optional: Adjust font size for better visibility
+                )
 
                 # Create two columns for displaying results for each error code and its details
                 a1, a2 = st.columns(2)
@@ -95,7 +102,25 @@ if df is not None:
                     st.markdown(
                         f"<div style='background-color: #e7f3fe; padding: 10px; margin-bottom: 10px; border-radius: 5px;'>{code}</div>",
                         unsafe_allow_html=True)
-                    st.plotly_chart(fig)
+                    st.plotly_chart(fig, use_container_width=True)
+
+                    # Now add the new columns below the Plotly chart
+                    # Assuming you want to display details for the first row corresponding to this error code
+                    details_df = filtered_df[filtered_df['Error Code'] == code]  # Get details for this error code
+                    if not details_df.empty:
+                     row = details_df.iloc[0]  # Get the first row of details
+
+                    # Format Risk Station
+                    risk_station_text = row['Risk station']  # Assuming 'Risk Station' is in the current row
+                    formatted_risk_station = re.sub(r'(\d+\.)', r'<br><b>\1</b>', risk_station_text)
+                    formatted_risk_station = formatted_risk_station.lstrip('<br>')  # Remove leading <br>
+                    st.markdown(f"<div style='background-color: #d1e7dd; padding: 15px; border-radius: 5px; margin-bottom: 10px;'><b>Risk Station:</b><br>{formatted_risk_station}</div>", unsafe_allow_html=True)
+
+                    # Format FA by TRC
+                    fa_by_trc_text = row['FA by TRC']  # Assuming 'FA by TRC' is in the current row
+                    formatted_fa_by_trc = re.sub(r'(\d+\.)', r'<br><b>\1</b>', fa_by_trc_text)
+                    formatted_fa_by_trc = formatted_fa_by_trc.lstrip('<br>')  # Remove leading <br>
+                    st.markdown(f"<div style='background-color: #cfe2ff; padding: 15px; border-radius: 5px; margin-bottom: 10px;'><b>FA by TRC:</b><br>{formatted_fa_by_trc}</div>", unsafe_allow_html=True)
 
                 with a2:
                     details_df = filtered_df[filtered_df['Error Code'] == code]
