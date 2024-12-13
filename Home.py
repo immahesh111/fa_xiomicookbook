@@ -90,7 +90,7 @@ if df is not None:
                 fig.update_layout(
                 height=200,
                 width=200,
-                margin=dict(l=10, r=10, t=20, b=10),  # Adjust margins (left, right, top, bottom)
+                margin=dict(l=10, r=10, t=50, b=10),  # Adjust margins (left, right, top, bottom)
                 paper_bgcolor="white",  # Optional: Set background color
                 font=dict(size=14)  # Optional: Adjust font size for better visibility
                 )
@@ -102,6 +102,7 @@ if df is not None:
                     st.markdown(
                         f"<div style='background-color: #e7f3fe; padding: 10px; margin-bottom: 10px; border-radius: 5px;'>{code}</div>",
                         unsafe_allow_html=True)
+                    
                     st.plotly_chart(fig, use_container_width=True)
 
                     # Now add the new columns below the Plotly chart
