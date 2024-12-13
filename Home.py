@@ -115,7 +115,7 @@ if df is not None:
                     risk_station_text = row['Risk station']  # Assuming 'Risk Station' is in the current row
                     formatted_risk_station = re.sub(r'(\d+\.)', r'<br><b>\1</b>', risk_station_text)
                     formatted_risk_station = formatted_risk_station.lstrip('<br>')  # Remove leading <br>
-                    st.markdown(f"<div style='background-color: #d1e7dd; padding: 15px; border-radius: 5px; margin-bottom: 10px;'><b>Corrective Action, DRI - PQC</b><br>{formatted_risk_station}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='background-color: #d1e7dd; padding: 15px; border-radius: 5px; margin-bottom: 10px;'><b>Risk Station</b><br>{formatted_risk_station}</div>", unsafe_allow_html=True)
 
                     # Format FA by TRC
                     fa_by_trc_text = row['FA by TRC']  # Assuming 'FA by TRC' is in the current row
@@ -140,7 +140,7 @@ if df is not None:
                         counter_action_text = row['Counter Action']
                         formatted_counter_action = re.sub(r'(\d+\.)', r'<br><b>\1</b>', counter_action_text)
                         formatted_counter_action = formatted_counter_action.lstrip('<br>')  # Remove leading <br>
-                        st.markdown(f"<div style='background-color: #f9c2c2; padding: 15px; border-radius: 5px; margin-bottom: 10px;'><b>Counter Action:</b><br>{formatted_counter_action}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='background-color: #f9c2c2; padding: 15px; border-radius: 5px; margin-bottom: 10px;'><b>Corrective Action, DRI - PQC</b><br>{formatted_counter_action}</div>", unsafe_allow_html=True)
 
                         st.markdown("---")  # Add a separator between entries
 
