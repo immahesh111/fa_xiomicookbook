@@ -22,7 +22,7 @@ def load_excel_file(file_path):
         return None
 
 # Load the DataFrame from the Xiomi Excel file
-df = load_excel_file("Xiomi1.xlsx")  # Replace with your actual file name
+df = load_excel_file("Xiomi.xlsx")  # Replace with your actual file name
 
 # Check if DataFrame is loaded successfully
 if df is not None:
