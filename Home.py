@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 import re  # Importing the regex module
 import plotly.graph_objects as go  # Importing Plotly for gauge chart
 import random  # For generating random success percentages
+import numpy as np  # For mathematical operations
 
 # Set the page configuration
 st.set_page_config(page_title="Xiomi FA Analysis", page_icon="", layout="wide")
@@ -64,36 +65,66 @@ if df is not None:
             # Display Success Percentage Title and Gauge for each error code in parallel layout
             # Display Success Percentage Title and Gauge for each error code in parallel layout
             for code in success_percentages.keys():
-                percentage = success_percentages[code]
-                color = "red" if percentage <= 50 else "yellow" if percentage <= 80 else "green"
+                current_value = success_percentages[code]
+                color = "red" if current_value <= 50 else "yellow" if current_value <= 80 else "green"
 
     # Create a gauge chart using Plotly
-                fig = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=percentage,
-                title={'text': f"Success Rate: {percentage}%", 'font': {'size': 20}},
-                gauge={
-            'axis': {'range': [0, 100], 'tickcolor': "black"},
-            'bar': {'color': color},
-            'bgcolor': "white",
-            'steps': [
-                {'range': [0, 50], 'color': "red"},
-                {'range': [50, 80], 'color': "yellow"},
-                {'range': [80, 100], 'color': "green"}
-                    ],
-                'threshold': {
-                'line': {'color': "black", 'width': 2},
-                'thickness': 0.75,
-                'value': percentage}}))
+                # Display Success Percentage Title and Gauge for this failure code occurrence
+                        #current_value=80
+                plot_bgcolor = "#ffffff" 
+                quadrant_colors = [plot_bgcolor, "#2bad4e", "#85e043", "#eff229", "#f2a529", "#f25829"] 
+                quadrant_text = ["", "<b>Very high</b>", "<b>High</b>", "<b>Medium</b>", "<b>Low</b>", "<b>Very low</b>"]
+                n_quadrants = len(quadrant_colors) - 1
 
-                # Update layout to change the size of the gauge and reduce padding
-                fig.update_layout(
-                height=200,
-                width=200,
-                margin=dict(l=10, r=10, t=50, b=10),  # Adjust margins (left, right, top, bottom)
-                paper_bgcolor="white",  # Optional: Set background color
-                font=dict(size=14)  # Optional: Adjust font size for better visibility
-                )
+                min_value = 0
+                max_value = 100
+                hand_length = np.sqrt(2) / 4
+                hand_angle = np.pi * (1 - (max(min_value, min(max_value, current_value)) - min_value) / (max_value - min_value))
+
+                fig = go.Figure(
+                            data=[
+                                go.Pie(
+                                    values=[0.5] + (np.ones(n_quadrants) / 2 / n_quadrants).tolist(),
+                                    rotation=90,
+                                    hole=0.5,
+                                    marker_colors=quadrant_colors,
+                                    text=quadrant_text,
+                                    textinfo="text",
+                                    hoverinfo="skip",
+                                ),
+                            ],
+                            layout=go.Layout(
+                                showlegend=False,
+                                margin=dict(b=0,t=10,l=10,r=10),
+                                width=450,
+                                height=450,
+                                paper_bgcolor=plot_bgcolor,
+                                annotations=[
+                                    go.layout.Annotation(
+                                        text=f"<b>Success Rate:</b><br>{current_value} %",
+                                        x=0.5, xanchor="center", xref="paper",
+                                        y=0.25, yanchor="bottom", yref="paper",
+                                        showarrow=False,
+                                        font=dict(size=24, color='black')
+                                    )
+                                ],
+                                shapes=[
+                                    go.layout.Shape(
+                                        type="circle",
+                                        x0=0.48, x1=0.52,
+                                        y0=0.48, y1=0.52,
+                                        fillcolor="#333",
+                                        line_color="#333",
+                                    ),
+                                    go.layout.Shape(
+                                        type="line",
+                                        x0=0.5, x1=0.5 + hand_length * np.cos(hand_angle),
+                                        y0=0.5, y1=0.5 + hand_length * np.sin(hand_angle),
+                                        line=dict(color="#333", width=4)
+                                    )
+                                ]
+                            )
+                        )
 
                 # Create two columns for displaying results for each error code and its details
                 a1, a2 = st.columns(2)
